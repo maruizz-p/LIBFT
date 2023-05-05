@@ -1,32 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maruiz-p <maruiz-p@student.42.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/25 12:49:21 by maruiz-p          #+#    #+#             */
-/*   Updated: 2023/05/05 16:23:30 by maruiz-p         ###   ########.fr       */
+/*   Created: 2023/05/01 20:26:16 by maruiz-p          #+#    #+#             */
+/*   Updated: 2023/05/01 20:41:41 by maruiz-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-size_t	ft_strlcpy(char *dst, const char *src, size_t dsize)
+void	ft_putnbr_fd(int n, int fd)
 {
-	size_t	i;
-	size_t	stlen;
-
-	stlen = ft_strlen(src);
-	if (dsize > 0)
+	if (n == -2147483648)
 	{
-		i = 0;
-		while (src[i] != '\0' && i < dsize - 1)
-		{
-			dst[i] = src[i];
-			i++;
-		}
-	dst[i] = '\0';
+		ft_putchar_fd('-', fd);
+		ft_putchar_fd('2', fd);
+		n = 147483648;
 	}
-	return (stlen);
+	if (n < 0)
+	{
+		ft_putchar_fd('-', fd);
+		n *= -1;
+	}
+	if (n >= 0 && n <= 9)
+	{
+		ft_putchar_fd(n + '0', fd);
+	}
+	else
+	{
+		ft_putnbr_fd(n / 10, fd);
+		ft_putnbr_fd(n % 10, fd);
+	}
 }

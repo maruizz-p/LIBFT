@@ -35,23 +35,44 @@ SRC = ft_isalnum.c\
 	ft_strjoin.c\
 	ft_strtrim.c\
 	ft_split.c\
+	ft_striteri.c\
+	ft_itoa.c\
+	ft_strmapi.c\
+	ft_putchar_fd.c\
+	ft_putstr_fd.c\
+	ft_putnbr_fd.c\
+	ft_putendl_fd.c\
+
+BONUS = ft_lstnew_bonus.c\
+	ft_lstadd_front_bonus.c\
+	ft_lstsize_bonus.c\
+	ft_lstlast_bonus.c\
+	ft_lstadd_back_bonus.c\
 
 OBJS := $(SRC:.c=.o)
+
+BONUS_OBJS = $(BONUS:.c=.o)
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
 	@$(LIB) $(NAME) $(OBJS)
 
+$(BONUS_OBJS) : $(BONUS)
+	$(CC) $(CFLAGS) -c $(BONUS)
+
+bonus: $(BONUS_OBJS) $(OBJS)
+	$(LIB) $(NAME) $(BONUS_OBJS) $(OBJS)
+
 clean:
-	@$(CLEAN) $(OBJS)
+	@$(CLEAN) $(OBJS) $(BONUS_OBJS)
 
 fclean: clean
-	@$(CLEAN) $(NAME)
+	@$(CLEAN) $(NAME) $(BONUS_OBJS)
 
 re: fclean all
 
-.PHONY : all clean fclean re
+.PHONY : all clean fclean re bonus
 
 	 ▄▀▀█▄   ▄▀▀▄ █  ▄▀▀▄ █  ▄▀▀▄ ▄▀▀▄ 
 	▐ ▄▀ ▀▄ █  █ ▄▀ █  █ ▄▀ █   █    █ 
