@@ -12,88 +12,89 @@
 
 #include "libft.h"
 
-static int	ft_count_words(char const *s, char c)
+static size_t	count_words(const char *s, char c)
 {
-	int	wc;
+	size_t	count;
 
-	wc = 0;
-	while (*s)
+	count = 0;
+	while (*s != '\0')
 	{
-		if (*s != c)
-		{
-			wc++;
-			while (*s && *s != c)
-				s++;
-		}
-		else
+		while (*s == c && *s != '\0')
+			s++;
+		if (*s != '\0')
+			count++;
+		while (*s != c && *s != '\0')
 			s++;
 	}
-	return (wc);
+	return (count);
 }
 
-static char	**ft_alloc_table(int size)
+static void	ft_free_split(char **arr, size_t index)
 {
-	char	**table;
+	size_t	i;
 
-	table = (char **)malloc((size + 1) * sizeof(char *));
-	if (!table)
-		return (NULL);
-	ft_bzero(table, (size + 1) * sizeof(char *));
-	return (table);
-}
-
-static char	*ft_worddup(char const *s, char c)
-{
-	char	*word;
-	int		i;
-
-	i = 0;
-	while (s[i] && s[i] != c)
-		i++;
-	word = ft_substr(s, 0, i);
-	if (!word)
-		return (NULL);
-	return (word);
-}
-
-static char	**ft_fill_table(char **table, char const *s, char c, int wc)
-{
-	int	i;
-
-	i = 0;
-	while (*s && i < wc)
+	if (arr != NULL)
 	{
-		if (*s != c)
+		i = 0;
+		while (i < index)
 		{
-			table[i] = ft_worddup(s, c);
-			if (!table[i])
-				return (NULL);
+			if (arr[i])
+				free(arr[i]);
 			i++;
-			s += ft_strlen(table[i - 1]);
 		}
-		else
-			s++;
+		free(arr);
 	}
-	return (table);
 }
 
-char	**ft_split(char const *s, char c)
+static size_t	word_length(const char *s, char delimiter)
 {
-	char	**table;
-	int		wc;
+	size_t	len;
 
-	if (!s)
-		return (NULL);
-	wc = ft_count_words(s, c);
-	table = ft_alloc_table(wc);
-	if (!table)
-		return (NULL);
-	if (!ft_fill_table(table, s, c, wc))
+	len = 0;
+	while (s[len] != delimiter && s[len] != '\0')
+		len++;
+	return (len);
+}
+
+static char	**split_loop(const char *s, char delimiter, char **new_str)
+{
+	size_t	i;
+	size_t	word_len;
+
+	i = 0;
+	while (*s != '\0')
 	{
-		while (wc >= 0)
-			free(table[wc--]);
-		free(table);
+		while (*s == delimiter && *s != '\0')
+			s++;
+		if (*s == '\0')
+			break ;
+		word_len = word_length(s, delimiter);
+		new_str[i] = (char *)malloc((word_len + 1) * sizeof(char));
+		if (!new_str[i])
+		{
+			ft_free_split(new_str, i);
+			return (NULL);
+		}
+		ft_strlcpy(new_str[i], s, word_len + 1);
+		s += word_len;
+		i++;
+	}
+	new_str[i] = NULL;
+	return (new_str);
+}
+
+char	**ft_split(const char *s, char delimiter)
+{
+	char	**new_str;
+
+	new_str = (char **)malloc((count_words(s, delimiter) + 1) * sizeof(char *));
+	if (!new_str || !s)
+		return (NULL);
+	new_str = split_loop(s, delimiter, new_str);
+	if (!new_str)
+	{
+		ft_free_split(new_str, count_words(s, delimiter));
 		return (NULL);
 	}
-	return (table);
+	return (new_str);
 }
